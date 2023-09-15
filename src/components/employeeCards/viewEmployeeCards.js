@@ -5,7 +5,7 @@ import { Box, Button, Flex, IconButton, Input, Stack, useColorModeValue, VStack 
 import React, { useContext, useEffect, useState } from 'react';
 
 export default function ViewEmployeeCards(props) {
-	const {} = useContext(CrudContext);
+	const { schema } = useContext(CrudContext);
 	const name = props?.name;
 	const surname = props?.surname;
 	const id = props?.id;
@@ -48,18 +48,38 @@ export default function ViewEmployeeCards(props) {
 		console.log(result);
 	};
 
-
 	const [mode, setMode] = useState(false);
 
 	const updateMode = () => {
 		setMode(!mode);
 	};
-
-	const save = () => {
-		setMode(!mode);
-		updateUser();
+	// Crear un objeto con los datos a validar
+	const data = {
+		name: newName,
+		surname: newSurname
 	};
 
+	const [error, setError] = useState();
+
+	const save = async () => {
+		try {
+			await schema.validate(data);
+			console.log('Este es el error', error);
+			setMode(!mode);
+			updateUser();
+		} catch (error) {
+			console.log(error.message);
+			setError(
+				error.inner.reduce((acc, curr) => {
+					acc[curr.path] = curr.message;
+					return acc;
+				}, {})
+			);
+
+			console.error('Los datos no son válidos');
+			console.error(error);
+		}
+	};
 
 	return (
 		<Box borderRadius="lg" m={{ base: 5, md: 16, lg: 10 }} p={{ base: 5, lg: 16 }}>
@@ -125,7 +145,7 @@ export default function ViewEmployeeCards(props) {
 									borderColor={useColorModeValue('white', 'black')}
 								/>
 							)}
-
+							{error && <p>{error.message}</p>}
 							{mode === false && id === id ? (
 								<Input
 									type="text"
@@ -151,6 +171,7 @@ export default function ViewEmployeeCards(props) {
 									borderColor={useColorModeValue('white', 'black')}
 								/>
 							)}
+							{error && <p>{error.message}</p>}
 							{mode === false && id === id ? (
 								<Input
 									type="text"
