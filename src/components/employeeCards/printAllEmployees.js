@@ -1,23 +1,35 @@
 import { HStack } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import ViewEmployeeCards from './viewEmployeeCards';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 export const PrintAllEmployees = () => {
-	const [employee, setEmployee] = useState();
-
 	const getUsers = async () => {
 		const api = '/api/getAllusers';
-		await fetch(api)
-			.then(res => res.json())
-			.then(res => setEmployee(res));
+		const response = await fetch(api);
+		const data = await response.json();
+		return data;
 	};
+	const queryClient = useQueryClient();
+	const { data: employee, isLoading, isError, error } = useQuery('employee', getUsers);
+
+	const { mutate, status } = useMutation(getUsers);
+
 	useEffect(() => {
-		getUsers();
-	}, [employee]);
+		mutate();
+		if (status === 'success') {
+			queryClient.invalidateQueries('employee');
+		}
+	}, [status, queryClient]);
 
 	return (
 		<HStack flexWrap={'wrap'}>
-			{employee &&
+			{isLoading ? (
+				<div>Loading...</div>
+			) : isError ? (
+				<div>Error: {error.message}</div>
+			) : (
+				employee &&
 				employee.map(object => (
 					<div key={object.id}>
 						<ViewEmployeeCards
@@ -28,7 +40,8 @@ export const PrintAllEmployees = () => {
 							age={object.age}
 						/>
 					</div>
-				))}
+				))
+			)}
 		</HStack>
 	);
 };

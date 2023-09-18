@@ -1,8 +1,9 @@
 import { CrudContext } from '@/context/crudProvider';
 import { pasarFecha } from '@/functions/functions';
 import { EditIcon } from '@chakra-ui/icons';
-import { Box, Button, Flex, IconButton, Input, Stack, useColorModeValue, VStack } from '@chakra-ui/react';
-import React, { useContext, useEffect, useState } from 'react';
+import { Box, Button, Flex, IconButton, Input, Stack, useColorModeValue, useToast, VStack } from '@chakra-ui/react';
+import React, { useContext, useState } from 'react';
+
 
 export default function ViewEmployeeCards(props) {
 	const { schema } = useContext(CrudContext);
@@ -53,31 +54,34 @@ export default function ViewEmployeeCards(props) {
 	const updateMode = () => {
 		setMode(!mode);
 	};
-	// Crear un objeto con los datos a validar
+
 	const data = {
 		name: newName,
 		surname: newSurname
 	};
 
-	const [error, setError] = useState();
+	const toast = useToast();
 
 	const save = async () => {
 		try {
-			await schema.validate(data);
-			console.log('Este es el error', error);
+			await schema.validate(data, { abortEarly: false });
 			setMode(!mode);
-			updateUser();
+			try{
+			 updateUser();
+			} catch (error) {
+				console.log(error);
+			}
+			
 		} catch (error) {
-			console.log(error.message);
-			setError(
-				error.inner.reduce((acc, curr) => {
-					acc[curr.path] = curr.message;
-					return acc;
-				}, {})
-			);
-
-			console.error('Los datos no son válidos');
-			console.error(error);
+			for (let i = 0; i < error.errors.length; i++) {
+				toast({
+					title: 'Please, check the following:',
+					description: error.errors[i],
+					status: 'error',
+					duration: 9000,
+					isClosable: true
+				});
+			}
 		}
 	};
 
@@ -86,10 +90,10 @@ export default function ViewEmployeeCards(props) {
 			<VStack spacing={{ base: 4, md: 8, lg: 20 }}>
 				<Stack spacing={{ base: 4, md: 8, lg: 20 }} direction={{ base: 'column', md: 'row' }}>
 					<Box
-						bg={useColorModeValue('black', 'gray.100')}
+						bg='black'
 						borderRadius="lg"
 						p={8}
-						color={useColorModeValue('white', 'black')}
+						color='white'
 						shadow="base">
 						<IconButton
 							icon={<EditIcon />}
@@ -117,7 +121,7 @@ export default function ViewEmployeeCards(props) {
 						)}
 
 						<VStack spacing={5}>
-							<h1 color={useColorModeValue('white', 'black')}>{'Employee ID: ' + id}</h1>
+							<h1 color='white'>{'Employee ID: ' + id}</h1>
 
 							{mode === false && id === id ? (
 								<Input
@@ -127,9 +131,9 @@ export default function ViewEmployeeCards(props) {
 									onChange={() => {}}
 									placeholder="enter employee name"
 									_placeholder={{
-										color: useColorModeValue('white', 'black')
+										color: 'white'
 									}}
-									borderColor={useColorModeValue('white', 'black')}
+									borderColor='white'
 								/>
 							) : (
 								<Input
@@ -140,12 +144,12 @@ export default function ViewEmployeeCards(props) {
 									value={newName}
 									placeholder={name}
 									_placeholder={{
-										color: useColorModeValue('white', 'black')
+										color: 'white'
 									}}
-									borderColor={useColorModeValue('white', 'black')}
+									borderColor='white'
 								/>
 							)}
-							{error && <p>{error.message}</p>}
+
 							{mode === false && id === id ? (
 								<Input
 									type="text"
@@ -154,9 +158,9 @@ export default function ViewEmployeeCards(props) {
 									onChange={() => {}}
 									placeholder="enter employee name"
 									_placeholder={{
-										color: useColorModeValue('white', 'black')
+										color: 'white'
 									}}
-									borderColor={useColorModeValue('white', 'black')}
+									borderColor='white'
 								/>
 							) : (
 								<Input
@@ -166,12 +170,12 @@ export default function ViewEmployeeCards(props) {
 									value={newSurname}
 									placeholder={surname}
 									_placeholder={{
-										color: useColorModeValue('white', 'black')
+										color: 'white'
 									}}
-									borderColor={useColorModeValue('white', 'black')}
+									borderColor='white'
 								/>
 							)}
-							{error && <p>{error.message}</p>}
+
 							{mode === false && id === id ? (
 								<Input
 									type="text"
@@ -180,9 +184,9 @@ export default function ViewEmployeeCards(props) {
 									onChange={() => {}}
 									placeholder="enter employee birthdate"
 									_placeholder={{
-										color: useColorModeValue('white', 'black')
+										color: 'white'
 									}}
-									borderColor={useColorModeValue('white', 'black')}
+									borderColor='white'
 								/>
 							) : (
 								<Input
@@ -192,9 +196,9 @@ export default function ViewEmployeeCards(props) {
 									value={newBirthdate}
 									placeholder="enter employee birthdate"
 									_placeholder={{
-										color: useColorModeValue('white', 'black')
+										color: 'white'
 									}}
-									borderColor={useColorModeValue('white', 'black')}
+									borderColor='white'
 								/>
 							)}
 							{/*        <CustomInput id={id} name={name} mode={mode} newName={newName} updateUser={updateUser}/>*/}
@@ -205,9 +209,9 @@ export default function ViewEmployeeCards(props) {
 								onChange={() => {}}
 								placeholder="enter employee age"
 								_placeholder={{
-									color: useColorModeValue('white', 'black')
+									color: 'white'
 								}}
-								borderColor={useColorModeValue('white', 'black')}
+								borderColor='white'
 							/>
 
 							<Button

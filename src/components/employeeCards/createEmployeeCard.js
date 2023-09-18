@@ -1,4 +1,5 @@
 
+import { CrudContext } from "@/context/crudProvider";
 import {
   Box,
   Button,
@@ -8,13 +9,14 @@ import {
   Input,
   InputGroup,
   Stack,
-  useColorModeValue,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 
 export const EmployeeCard = () => {
+  const { schema } = useContext(CrudContext);
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [birthdate, setBirthdate] = useState("");
@@ -34,6 +36,30 @@ export const EmployeeCard = () => {
     const result = await res.json();
     console.log(result);
   };
+	const data = {
+		name: name,
+		surname: surname
+	};
+
+	const toast = useToast();
+	const save = async () => {
+		try {
+			await schema.validate(data, { abortEarly: false });
+			createUser();
+		} catch (error) {
+
+			for (let i = 0; i < error.errors.length; i++) {
+				toast({
+					title: 'Please, check the following:',
+					description: error.errors[i],
+					status: 'error',
+					duration: 9000,
+					isClosable: true
+				});
+			}
+
+		}
+	};
 
   return (
     <Box
@@ -47,19 +73,18 @@ export const EmployeeCard = () => {
           direction={{ base: "column", md: "row" }}
         >
           <Box
-            bg={useColorModeValue("black", "gray.100")}
+            bg="black"
             borderRadius="lg"
             p={8}
-            color={useColorModeValue("white", "black")}
-            shadow="base"
+            color="white"
           >
             <HStack spacing={5}>
-              <FormLabel color={useColorModeValue("white", "black")}>
+              <FormLabel color="white">
                 Create Employee
               </FormLabel>
               <FormControl
                 isRequired
-                borderColor={useColorModeValue("white", "black")}
+                borderColor="white"
               >
                 <InputGroup>
                   <Input
@@ -68,9 +93,9 @@ export const EmployeeCard = () => {
                     onChange={(e) => setName(e.target.value)}
                     placeholder="enter employee name"
                     _placeholder={{
-                      color: useColorModeValue("white", "black"),
+                      color: "white"
                     }}
-                    borderColor={useColorModeValue("white", "black")}
+                    borderColor="white"
                   />
                 </InputGroup>
               </FormControl>
@@ -82,9 +107,9 @@ export const EmployeeCard = () => {
                   onChange={(e) => setSurname(e.target.value)}
                   placeholder="enter employee surname"
                   _placeholder={{
-                    color: useColorModeValue("white", "black"),
+                    color: "white"
                   }}
-                  borderColor={useColorModeValue("white", "black")}
+                  borderColor="white"
                 />
               </InputGroup>
 
@@ -95,16 +120,16 @@ export const EmployeeCard = () => {
                   onChange={(e) => setBirthdate(e.target.value)}
                   placeholder="enter employee birthdate"
                   _placeholder={{
-                    color: useColorModeValue("white", "black"),
+                    color: "white"
                   }}
-                  borderColor={useColorModeValue("white", "black")}
+                  borderColor="white"
                 />
               </InputGroup>
 
               <Button
                 width={"full"}
                 type="submit"
-                onClick={createUser}
+                onClick={save}
                 colorScheme="blue"
                 bg="blue.400"
                 color="white"
