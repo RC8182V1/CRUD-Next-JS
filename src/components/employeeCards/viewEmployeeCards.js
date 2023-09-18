@@ -4,7 +4,6 @@ import { EditIcon } from '@chakra-ui/icons';
 import { Box, Button, Flex, IconButton, Input, Stack, useColorModeValue, useToast, VStack } from '@chakra-ui/react';
 import React, { useContext, useState } from 'react';
 
-
 export default function ViewEmployeeCards(props) {
 	const { schema } = useContext(CrudContext);
 	const name = props?.name;
@@ -57,7 +56,8 @@ export default function ViewEmployeeCards(props) {
 
 	const data = {
 		name: newName,
-		surname: newSurname
+		surname: newSurname,
+		birthdate: newBirthdate
 	};
 
 	const toast = useToast();
@@ -66,12 +66,11 @@ export default function ViewEmployeeCards(props) {
 		try {
 			await schema.validate(data, { abortEarly: false });
 			setMode(!mode);
-			try{
-			 updateUser();
+			try {
+				updateUser();
 			} catch (error) {
 				console.log(error);
 			}
-			
 		} catch (error) {
 			for (let i = 0; i < error.errors.length; i++) {
 				toast({
@@ -89,12 +88,7 @@ export default function ViewEmployeeCards(props) {
 		<Box borderRadius="lg" m={{ base: 5, md: 16, lg: 10 }} p={{ base: 5, lg: 16 }}>
 			<VStack spacing={{ base: 4, md: 8, lg: 20 }}>
 				<Stack spacing={{ base: 4, md: 8, lg: 20 }} direction={{ base: 'column', md: 'row' }}>
-					<Box
-						bg='black'
-						borderRadius="lg"
-						p={8}
-						color='white'
-						shadow="base">
+					<Box bg="black" borderRadius="lg" p={8} color="white" shadow="base">
 						<IconButton
 							icon={<EditIcon />}
 							w={6}
@@ -121,7 +115,7 @@ export default function ViewEmployeeCards(props) {
 						)}
 
 						<VStack spacing={5}>
-							<h1 color='white'>{'Employee ID: ' + id}</h1>
+							<h1 color="white">{'Employee ID: ' + id}</h1>
 
 							{mode === false && id === id ? (
 								<Input
@@ -133,7 +127,7 @@ export default function ViewEmployeeCards(props) {
 									_placeholder={{
 										color: 'white'
 									}}
-									borderColor='white'
+									borderColor="white"
 								/>
 							) : (
 								<Input
@@ -146,7 +140,7 @@ export default function ViewEmployeeCards(props) {
 									_placeholder={{
 										color: 'white'
 									}}
-									borderColor='white'
+									borderColor="white"
 								/>
 							)}
 
@@ -160,7 +154,7 @@ export default function ViewEmployeeCards(props) {
 									_placeholder={{
 										color: 'white'
 									}}
-									borderColor='white'
+									borderColor="white"
 								/>
 							) : (
 								<Input
@@ -172,7 +166,7 @@ export default function ViewEmployeeCards(props) {
 									_placeholder={{
 										color: 'white'
 									}}
-									borderColor='white'
+									borderColor="white"
 								/>
 							)}
 
@@ -186,7 +180,7 @@ export default function ViewEmployeeCards(props) {
 									_placeholder={{
 										color: 'white'
 									}}
-									borderColor='white'
+									borderColor="white"
 								/>
 							) : (
 								<Input
@@ -198,7 +192,7 @@ export default function ViewEmployeeCards(props) {
 									_placeholder={{
 										color: 'white'
 									}}
-									borderColor='white'
+									borderColor="white"
 								/>
 							)}
 							{/*        <CustomInput id={id} name={name} mode={mode} newName={newName} updateUser={updateUser}/>*/}
@@ -211,7 +205,7 @@ export default function ViewEmployeeCards(props) {
 								_placeholder={{
 									color: 'white'
 								}}
-								borderColor='white'
+								borderColor="white"
 							/>
 
 							<Button

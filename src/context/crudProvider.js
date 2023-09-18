@@ -18,6 +18,8 @@ export const CrudProvider = ({ children }) => {
 		.min(2, "The surname must have at least 2 characters")
 		.max(50, "The surname must have a maximum of 50 characters")
 		.matches(/^[A-Za-z\s]+$/, "The surname can only contain letters and spaces"),
+		birthdate: yup
+		.string().required("The birthdate is required")
 		});
 
 	const dataContext = { schema };
